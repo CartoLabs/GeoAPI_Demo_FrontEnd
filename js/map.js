@@ -1,14 +1,23 @@
 /*********************************/
 /**** Basic Map Functionality ****/
+var geojsonLayer, marker;
+var geojsonMarkerOptions = {
+    radius: 8,
+    fillColor: "#ff7800",
+    color: "#000",
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.8
+};
 var map = L.map('map', { zoomControl:false }).setView([39.283825, -76.611207], 13);
 
-var Acetate_all = L.tileLayer('http://a{s}.acetate.geoiq.com/tiles/acetate-hillshading/{z}/{x}/{y}.png', {
-	attribution: '&copy;2012 Esri & Stamen, Data from OSM and Natural Earth',
-	subdomains: '0123',
-	minZoom: 2,
-	maxZoom: 18
+var Nokia_satelliteYesLabelsDay = L.tileLayer('http://{s}.maptile.lbs.ovi.com/maptiler/v2/maptile/newest/hybrid.day/{z}/{x}/{y}/256/png8?token={devID}&app_id={appID}', {
+	attribution: 'Map &copy; <a href="http://developer.here.com">Nokia</a>, Data &copy; NAVTEQ 2012',
+	subdomains: '1234',
+	devID: 'Ck2ZlB94buXpdg0bwRc-5g',
+	appID: 'hLrC66JGR3bbiNCJt3OG'
 });
-Acetate_all.addTo(map);
+Nokia_satelliteYesLabelsDay.addTo(map);
 
 
 /******************/
@@ -33,11 +42,19 @@ function geocode(location) {
 }
 
 function addPoint(lat, lon, matchLocation){
+	try {
+		map.removeLayer(marker);
+	}
+	catch (e){
+		console.log('no layer to clear');
+	}
 	marker = L.marker([lat, lon], {draggable: true}).addTo(map).bindPopup(matchLocation);
 	marker.on('dragend', function(e){
 		marker = e.target;
 		reverseGeocode(e.target._latlng.lat, e.target._latlng.lng, marker, updatePopupContent);
+		getData(e.target._latlng.lat, e.target._latlng.lng);
 	});
+	getData(lat, lon);
 }
 
 function updatePopupContent(marker, content){
@@ -55,6 +72,36 @@ function reverseGeocode(lat, lon, marker, callback) {
 			}
 	});
 }
+
+function getData(x,y){
+	try {
+		map.removeLayer(geojsonLayer);
+	}
+	catch (e){
+		console.log('no layer to clear');
+	}
+
+	$.ajax({
+		type: "GET",
+		url: "http://107.170.0.21/Crime/Near",
+		dataType: 'json',
+		data: { "myx": x, "myy": y, "numFeats":1000},
+		success: function (response) {
+			geojsonLayer = L.geoJson(response, {
+				pointToLayer: function (feature, latlng) {
+					return L.circleMarker(latlng, geojsonMarkerOptions);
+				}
+			}).addTo(map);
+			// var bounds = geojsonLayer.geometry.getBounds();
+			// map.zoomToExtent(bounds);
+			map.fitBounds(geojsonLayer.getBounds());
+		},
+		error: function(response){
+			console.error(response);
+		}
+	});
+}
+
 
 /*********************/
 /**** Date Picker ****/
