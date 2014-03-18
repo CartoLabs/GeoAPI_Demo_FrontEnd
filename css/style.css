@@ -4,12 +4,34 @@ html, body {
 	margin: 0px;
 	padding: 0px;
 }
+#header-nav {
+    z-index: 999;
+    padding: 10px 10px 0 10px;
+}
+.navbar {
+	margin-bottom: 0px;
+	min-height: 55px;
+	background-color: transparent;
+	background-color: rgba(256, 256, 256, 0.6);
+	border-color: transparent;
+	-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
 #map {
 	height: 100%;
 	width: 100%;
 }
 .leaflet-top .leaflet-control {
 	margin-top: 50px;
+}
+.input-group-addon {
+	font-size: 18px;
+}
+.input-group-addon.glyphicon {
+	position: relative;
+	top: 0px;
+	height: 34px;
 }
 .input-group.locator {
 	max-width: 350px;
@@ -43,3 +65,25 @@ html, body {
 .category {
 	z-index: 1010;
 }
+
+
+@media (max-width: 560px) {
+	.category {
+		display: block;
+		right: 0px;
+		position: absolute;
+		top: 40px;
+	}
+}
+@media (max-width: 900px) {
+	.filter {
+		position: absolute;
+		top: 70px;
+		right: 10px;
+		z-index: 1010;
+	}
+
+}
+
+
+
