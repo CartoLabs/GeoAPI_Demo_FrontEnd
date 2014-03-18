@@ -74,6 +74,9 @@ html, body {
 		position: absolute;
 		top: 40px;
 	}
+	.leaflet-control-attribution {
+		display: none;
+	}
 }
 @media (max-width: 900px) {
 	.filter {
